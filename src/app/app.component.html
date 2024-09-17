@@ -1,13 +1,24 @@
-<app-header></app-header>
+<app-header>
+  <p class="name" *ngIf="isLoggedIn">Harry Potter</p>
+  <app-button [buttonText]="loginButtonText" (click)="switchLogin()"></app-button>
+</app-header>
 <div class="app-root">
+  <div class="section-horizontal">
+    <app-button [buttonText]="buttonName"></app-button>
+  </div>
+
+  <div class="section-vertical"></div>
   <!-- Search component -->
-  <!--<app-search></app-search>-->
+  <app-search></app-search>
 
   <!-- Info component -->
-  <!--<app-info></app-info>-->
+  <app-info [text]="'Please use \'Add New Course\' button to add your first course'">
+    <app-button [buttonText]="infoButtonText"></app-button>
+  </app-info>
 
   <!-- Course Card component -->
-  <!--<app-course-card></app-course-card>-->
+  <app-courses-list></app-courses-list>
+  <app-course-info></app-course-info>
 
   <!-- Login Form component -->
   <!--<app-login-form></app-login-form>-->

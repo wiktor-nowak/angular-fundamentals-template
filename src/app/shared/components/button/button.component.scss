@@ -1,21 +1,32 @@
 .app-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 13px 36px;
-    gap: 10px;
-    background: #007298;
-    border-radius: 4px;
-    color: #fff;
-    text-transform: uppercase;
-    cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  padding: 0 36px;
+  gap: 10px;
+  background: #007298;
+  border-radius: 4px;
+  color: #fff;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    background: #016486;
+  }
+
+  &__single-icon {
+    padding: 0 13px;
+  }
+
+  &--reversed {
+    background-color: inherit;
+    color: #007298;
 
     &:hover {
-        background: #016486;
+      color: #016486;
+      background-color: inherit;
     }
-
-    &__single-icon {
-        padding: 13px;
-    }
+  }
 }
