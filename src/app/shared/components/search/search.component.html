@@ -1,4 +1,4 @@
 <div class="app-search">
-  <input type="text" placeholder="Input text" #searchInput="">
+  <input type="text" [placeholder]="placeholder" #searchInput="">
   <app-button [buttonText]="'search'" (click)="handleSearch(searchInput.value)"></app-button>
 </div>
