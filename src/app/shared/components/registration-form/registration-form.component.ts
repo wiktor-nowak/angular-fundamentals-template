@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Form, FormBuilder, Validators } from '@angular/forms';
+import { emailCorrectnessValidator } from '@app/shared/functions/validator.function';
 
 @Component({
   selector: 'app-registration-form',
@@ -7,6 +8,20 @@ import { FormGroup } from '@angular/forms';
   styleUrls: ['./registration-form.component.scss'],
 })
 export class RegistrationFormComponent {
-  registrationForm!: FormGroup;
-  // Use the names `name`, `email`, `password` for the form controls.
+  registrationForm = this.formBuilder.group({
+    name:['', [Validators.required, Validators.minLength(6)]],
+    email:['', Validators.required],
+    password:['', Validators.required]
+  });
+  submitted: boolean = false
+
+  constructor (private formBuilder: FormBuilder) {}
+
+  handleSubmit() {
+    this.submitted = true
+  }
+
+  checkIsValid(field: string) {
+    return this.registrationForm.get(field)?.invalid && (this.registrationForm.get(field)?.touched || this.submitted)
+  }
 }
