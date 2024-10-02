@@ -6,4 +6,23 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 0 24px;
+
+
+  .form__control {
+    position: relative;
+
+    .password__icon {
+      position: absolute;
+      right: 0;
+      top: 20px;
+    }
+  }
+
+  .form__action {
+
+    button {
+      width: 100%;
+    }
+  }
 }

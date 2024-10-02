@@ -10,7 +10,6 @@ export class CourseCardComponent {
   @Input() card: CardData = TEST_LOREM_CARD;
 
   getDisplayDuration(duration: number) {
-    console.log(this.card.creationDate);
     return Math.floor(duration / 60) + ":" + (duration % 60) + " hours";
   }
 
@@ -22,7 +21,6 @@ export class CourseCardComponent {
   @Output() clickOnShow = new EventEmitter<string>();
 
   onClickButton() {
-    console.log("Emited!");
     this.clickOnShow.emit("Emited!");
   }
 }

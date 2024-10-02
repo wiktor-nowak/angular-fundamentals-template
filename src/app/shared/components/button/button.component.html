@@ -1,11 +1,10 @@
-<div
+<button
   [ngClass]="{
     'app-button': true,
     'app-button__single-icon': iconName,
     'app-button--reversed': iconName
   }"
 >
-  <!-- Replace the text below with your code -->
   {{ iconName ? "" : buttonText }}
   <fa-icon *ngIf="iconName" [icon]="iconName" size="xl"></fa-icon>
-</div>
+</button>
