@@ -1,4 +1,4 @@
-@import 'src/app/shared/styles/styles.scss';
+@import "src/app/shared/styles/styles.scss";
 
 .login-form {
   width: 260px;
@@ -7,7 +7,6 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 0 24px;
-
 
   .form__control {
     position: relative;
@@ -20,7 +19,6 @@
   }
 
   .form__action {
-
     button {
       width: 100%;
     }

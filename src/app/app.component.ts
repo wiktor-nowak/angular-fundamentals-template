@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { AuthService } from "./auth/services/auth.service";
 
 @Component({
   selector: "app-root",
@@ -9,11 +10,4 @@ export class AppComponent {
   title = "courses-app";
   buttonName = "Some Other Name";
   infoButtonText = "Add New Course";
-  isLoggedIn = false;
-  loginButtonText: string = "Login";
-
-  switchLogin() {
-    this.isLoggedIn = !this.isLoggedIn;
-    this.loginButtonText = this.isLoggedIn ? "Logout" : "Login";
-  }
 }
