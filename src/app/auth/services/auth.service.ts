@@ -3,8 +3,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { SessionStorageService } from "./session-storage.service";
 import { Router } from "@angular/router";
-
-const API_URL = "http://localhost:4000";
+import { API_URL } from "@app/shared/mocks/mocks";
 
 export interface LoginInterface {
   email: "string";

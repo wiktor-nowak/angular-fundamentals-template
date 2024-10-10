@@ -17,7 +17,6 @@ import { DurationPipe } from "./pipes/duration.pipe";
 import { CustomDatePipe } from "./pipes/custom-date.pipe";
 import { EmailValidatorDirective } from "@shared/directives/email.directive";
 import { TogglePasswordDirective } from "@shared/directives/toggle.directive";
-import { AuthService } from "@app/auth/services/auth.service";
 import { HttpClientModule } from "@angular/common/http";
 
 const components = [

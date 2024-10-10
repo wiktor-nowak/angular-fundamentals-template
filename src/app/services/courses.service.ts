@@ -1,42 +1,166 @@
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { SessionStorageService } from "@app/auth/services/session-storage.service";
+import { API_URL } from "@app/shared/mocks/mocks";
+import { AuthorIdResponse, AuthorsResponse } from "@app/shared/types/authors";
+import { CourseData, CourseResponse, CoursesResponse } from "@app/shared/types/courses";
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  first,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  take,
+  tap,
+  timeout
+} from "rxjs";
+
+const URL_COURSES = "/courses";
+const URL_AUTHORS = "/authors";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root"
 })
 export class CoursesService {
-    getAll() {
-        // Add your code here
-    }
+  private isLoading$$ = new BehaviorSubject(true);
+  public isLoading$ = this.isLoading$$.asObservable();
+  private courses$$ = new BehaviorSubject([]);
+  public courses$ = this.courses$$.asObservable();
 
-    createCourse(course: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  constructor(private http: HttpClient, private router: Router) {}
 
-    editCourse(id: string, course: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  grabAuthorNames(authorIds: string[]) {
+    let authors: Observable<AuthorIdResponse[]>;
+    authors = forkJoin(authorIds.map((authorId) => this.getAuthorById(authorId)));
+    return authors.pipe(
+      map((authorResponse) => {
+        return authorResponse
+          .filter((author) => author.successful)
+          .map((author) => author.result.name);
+      })
+    );
+  }
 
-    getCourse(id: string) {
-        // Add your code here
-    }
+  getAll() {
+    this.isLoading$$.next(true);
+    this.http
+      .get<CoursesResponse>(`${API_URL + URL_COURSES}/all`)
+      .pipe(
+        tap((data) => {
+          this.courses$$.next(data.result);
+        }),
+        catchError((error) => {
+          console.error("Error fetching courses:", error);
+          return of([]);
+        }),
+        finalize(() => this.isLoading$$.next(false))
+      )
+      .subscribe();
+  }
 
-    deleteCourse(id: string) {
-        // Add your code here
-    }
+  createCourse(course: Omit<CourseData, "id" | "creationDate">) {
+    console.log(JSON.stringify(course));
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      accept: "*/*"
+    });
+    this.http
+      .post(`${API_URL}${URL_COURSES}/add`, JSON.stringify(course), {
+        headers: { "Content-Type": "application/json" }
+      })
+      .pipe(
+        tap((data) => {
+          console.log(data);
+        }),
+        catchError((error) => {
+          console.error("Error fetching courses:/n", error);
+          return of([]);
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          console.log("Course added successfully! ", data);
+        }
+      });
+  }
 
-    filterCourses(value: string) {
-        // Add your code here
-    }
+  editCourse(id: string, course: any) {
+    // replace 'any' with the required interface
+    // Add your code here
+  }
 
-    getAllAuthors() {
-        // Add your code here
-    }
+  getCourse(id: string) {
+    return this.http.get<CourseResponse>(`${API_URL + URL_COURSES}/${id}`).pipe(
+      first(),
+      catchError((error) => {
+        console.error("Error fetching course:/n", error);
+        let emptyResponse: CourseResponse;
+        return of(emptyResponse);
+      })
+    );
+  }
 
-    createAuthor(name: string) {
-        // Add your code here
-    }
+  deleteCourse(id: string) {
+    const headers = { accept: "*/*" };
+    this.http.delete(`${API_URL}${URL_COURSES}/${id}`, { headers }).subscribe({
+      next: () => {
+        this.router.navigateByUrl("/courses");
+      },
+      error: (error) => console.error(error)
+    });
+  }
 
-    getAuthorById(id: string) {
-        // Add your code here
-    }
+  filterCourses(value: string) {
+    this.isLoading$$.next(true);
+    this.http
+      .get<CoursesResponse>(`${API_URL + URL_COURSES}/filter?title=${value}`)
+      .pipe(
+        tap((data) => {
+          this.courses$$.next(data.result);
+        }),
+        catchError((error) => {
+          console.error("Error fetching courses:/n", error);
+          return of([]);
+        }),
+        finalize(() => this.isLoading$$.next(false))
+      )
+      .subscribe();
+    // this.http.get<CoursesResponse>(`${API_URL + URL_COURSES}/filter?${value}`).pipe(first());
+  }
+
+  getAllAuthors() {
+    return this.http.get<AuthorsResponse>(`${API_URL + URL_AUTHORS}/all`).pipe(
+      first(),
+      catchError((error) => {
+        console.error("Error fetching courses:/n", error);
+        let emptyResponse: AuthorsResponse;
+        return of(emptyResponse);
+      })
+    );
+  }
+
+  createAuthor(name: string) {
+    this.http
+      .post<{ successful: boolean }>(`${API_URL + URL_AUTHORS}/add`, { name: name })
+      .subscribe({
+        next: (data) => {
+          console.log("Author added successfully! ", data);
+        }
+      });
+  }
+
+  getAuthorById(id: string) {
+    return this.http.get<AuthorIdResponse>(`${API_URL + URL_AUTHORS}/${id}`).pipe(
+      first(),
+      catchError((error) => {
+        console.error("Error fetching courses:/n", error);
+        let emptyResponse: AuthorIdResponse;
+        return of(emptyResponse);
+      })
+    );
+  }
 }
