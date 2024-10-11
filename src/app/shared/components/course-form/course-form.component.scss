@@ -35,3 +35,29 @@
     cursor: pointer;
   }
 }
+
+.form__action {
+  display: flex;
+  margin-top: 16px;
+  gap: 8px;
+  justify-content: flex-end;
+
+  button {
+    width: auto;
+  }
+}
+
+.course__authors {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  .authors__row {
+    display: flex;
+
+    input {
+      border: none;
+    }
+  }
+}

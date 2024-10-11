@@ -1,34 +1,4 @@
-<app-header>
-  <p class="name" *ngIf="isLoggedIn">Harry Potter</p>
-  <app-button [buttonText]="loginButtonText" (click)="switchLogin()"></app-button>
-</app-header>
+<app-header></app-header>
 <div class="app-root">
-  <div class="section-horizontal">
-    <app-button [buttonText]="buttonName"></app-button>
-  </div>
-
-  <div class="section-vertical"></div>
-  <!-- Search component -->
-  <app-search></app-search>
-
-  <!-- Info component -->
-  <app-info [text]="'Please use \'Add New Course\' button to add your first course'">
-    <app-button [buttonText]="infoButtonText"></app-button>
-  </app-info>
-
-  <!-- Course Card component -->
-  <app-courses-list></app-courses-list>
-  <app-course-info></app-course-info>
-
-  <!-- Login Form component -->
-  <!--<app-login-form></app-login-form>-->
-
-  <!-- Login Form component -->
-  <!--<app-registration-form></app-registration-form>-->
-
-  <!-- Login Form component -->
-  <!--<app-course-form></app-course-form>-->
-
-  <!-- Modal component -->
-  <!-- <app-modal [message]="'Message'" [title]="'Title'" [okButtonText]="'Ok'" [cancelButtonText]="'Cancel'"></app-modal> -->
+  <router-outlet></router-outlet>
 </div>

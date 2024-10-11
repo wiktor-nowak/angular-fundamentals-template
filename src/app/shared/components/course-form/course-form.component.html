@@ -1,14 +1,22 @@
 <!-- Replace ::text:: with your code -->
 <h2>Create / Edit Course</h2>
-<form>
+<form [formGroup]="courseForm" (ngSubmit)="handleSubmit()">
   <div class="app-plate">
     <div class="course">
       <h3>Main Info</h3>
       <div class="form__control">
         <label for="title">Title</label>
         <!--Use the name `title` for the form control.-->
-        <input type="text" id="title" placeholder="Input text"/>
-        <span id="titleErrorMessage" class="text-danger">Title is required.</span>
+        <input
+          type="text"
+          id="title"
+          placeholder="Input text"
+          formControlName="title"
+          [class.invalid]="checkIsValid('title')"
+        />
+        <span id="titleErrorMessage" class="text-danger" *ngIf="checkIsValid('title')"
+          >Title is required.</span
+        >
       </div>
       <div class="form__control">
         <label for="description">Description</label>
@@ -19,21 +27,66 @@
           placeholder="Input text"
           rows="4"
           cols="5"
+          formControlName="description"
+          [class.invalid]="checkIsValid('description')"
         ></textarea>
-        <span id="descriptionErrorMessage" class="text-danger">Description is required.</span>
+        <span id="descriptionErrorMessage" class="text-danger" *ngIf="checkIsValid('description')"
+          >Description is required.</span
+        >
       </div>
       <div class="separator"></div>
       <h3>Authors</h3>
       <div class="form__control">
         <div class="course__flex">
           <!--Use the name `author` for the form control.-->
-          <input type="text" id="author" placeholder="Input Author Name"/>
-          <app-button id="createAuthor"></app-button>
+          <input
+            type="text"
+            id="author"
+            placeholder="Input Author Name"
+            formControlName="author"
+            [class.invalid]="checkIsValid('author')"
+          />
+          <app-button
+            [buttonText]="'Create Author'"
+            id="createAuthor"
+            (click)="createNewAuthor(); $event.preventDefault()"
+          ></app-button>
         </div>
-        <span id="authorErrorMessage">New author should contain only latin letters and numbers.</span>
+        <span
+          id="authorErrorMessage"
+          class="text-danger"
+          *ngIf="checkIsValid('author') && author?.errors?.['minLength']"
+          >Provide longer name.</span
+        >
+        <span
+          id="authorErrorMessage2"
+          class="text-danger"
+          *ngIf="checkIsValid('author') && author?.errors?.['pattern']"
+          >New author should contain only latin letters and numbers.</span
+        >
+        <h4>Course Authors</h4>
         <div class="course__authors">
           <!--Use the name `authors` for the form array.-->
-          ::Authors::
+          <div formArrayName="authors">
+            <div class="authors__row" *ngFor="let authorName of getAuthorNames(); index as i">
+              <input disabled [value]="authorName" class="authors__record" />
+              <app-button
+                [iconName]="faTrashCanIcon"
+                (click)="deleteAuthor(i); $event.preventDefault()"
+              ></app-button>
+            </div>
+          </div>
+        </div>
+        <h4>Authors</h4>
+        <div class="course__authors">
+          <!--Use the name `authors` for the form array.-->
+          <div class="authors__row" *ngFor="let authorName of getOtherAuthorNames(); index as i">
+            <input [value]="authorName" disabled class="authors__record" />
+            <app-button
+              [iconName]="faPlusIcon"
+              (click)="addAuthor(i); $event.preventDefault()"
+            ></app-button>
+          </div>
         </div>
       </div>
       <div class="separator"></div>
@@ -41,16 +94,26 @@
       <div class="form__control">
         <div class="course__flex">
           <!--Use the name `duration` for the form array.-->
-          <input type="number" id="duration" placeholder="Input duration"/>
+          <input
+            type="number"
+            id="duration"
+            min="0"
+            placeholder="Input duration"
+            formControlName="duration"
+            [class.invalid]="checkIsValid('duration')"
+          />
           <div class="course__duration">
-            ::Duration::
+            <strong>{{ courseForm["controls"].duration.value | duration }}</strong> hours
           </div>
         </div>
-        <span id="durationErrorMessage" class="text-danger">Duration is required.</span>
-      </div>
-      <div class="form__action">
-        <app-button></app-button>
+        <span id="durationErrorMessage" class="text-danger" *ngIf="checkIsValid('duration')"
+          >Duration is required.</span
+        >
       </div>
     </div>
+  </div>
+  <div class="form__action">
+    <app-button (click)="goBack()" type="button" [buttonText]="'cancel'"></app-button>
+    <app-button type="submit" [buttonText]="'create course'"></app-button>
   </div>
 </form>

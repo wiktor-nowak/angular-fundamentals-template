@@ -3,7 +3,6 @@ $color-gray: #CFCFCF;
 $color-red: #FF0000;
 
 .app-plate {
-    width: 100%;
     min-height: 477px;
     background-color: $color-white;
     border: 1px solid $color-gray;
@@ -15,6 +14,7 @@ $color-red: #FF0000;
 
 .text-align-center {
     text-align: center;
+    width: 100%;
 }
 
 .app-error-text {
