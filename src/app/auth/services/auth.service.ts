@@ -78,10 +78,9 @@ export class AuthService {
     this.http.post<RegisterResponse>(`${API_URL}/register`, user).subscribe({
       next: (data) => {
         if (data.successful) {
-          console.log(data.result);
           this.login({ email: user.email, password: user.password });
         } else {
-          data.errors?.map((err) => console.log(err));
+          data.errors?.map((err) => console.error(err));
         }
       }
     });

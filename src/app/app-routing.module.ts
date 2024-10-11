@@ -23,8 +23,7 @@ export const routes: Routes = [
       { path: ":id", component: CourseInfoComponent },
       {
         path: "edit",
-        children: [{ path: ":id", component: CourseFormComponent }],
-        canActivate: [AdminGuard]
+        children: [{ path: ":id", component: CourseFormComponent }]
       }
     ],
     canActivate: [AuthorizedGuard]

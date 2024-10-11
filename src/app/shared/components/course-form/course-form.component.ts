@@ -1,11 +1,12 @@
 import { AfterViewInit, Component } from "@angular/core";
-import { FormBuilder, Validators } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CoursesService } from "@app/services/courses.service";
 import { AuthorData } from "@app/shared/types/authors";
 import { CourseData } from "@app/shared/types/courses";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { fas, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { first } from "rxjs";
 
 @Component({
   selector: "app-course-form",
@@ -25,28 +26,36 @@ export class CourseFormComponent implements AfterViewInit {
   faTrashCanIcon = faTrashCan;
   faPlusIcon = faPlus;
 
+  id: string;
   isEdited: boolean;
+  dataToBeEdited: CourseData;
 
   courseForm = this.fb.group({
     title: ["", [Validators.required, Validators.minLength(2)]],
     description: ["", [Validators.required, Validators.minLength(2)]],
-    authors: this.fb.array([], Validators.required),
+    authors: new FormArray<FormControl<AuthorData>>([], Validators.required),
     author: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9]+$/)]],
-    otherAuthors: this.fb.array([]),
-    duration: [null, Validators.required]
+    otherAuthors: new FormArray<FormControl<AuthorData>>([]),
+    duration: new FormControl<number | null>(null, Validators.required)
   });
   submitted: boolean = false;
 
   ngAfterViewInit(): void {
-    this.coursesService.getAllAuthors().subscribe((response) => {
-      response.result.forEach((fetchedAuthor) => {
-        this.courseForm.controls.otherAuthors.push(this.fb.control(fetchedAuthor));
-      });
+    this.route.params.subscribe((value) => {
+      this.id = value["id"];
     });
     this.route.pathFromRoot[2].url.subscribe((value) => {
       this.isEdited = value[0].path === "edit";
-      console.log(this.isEdited);
     });
+    if (this.isEdited) {
+      this.loadData();
+    } else {
+      this.coursesService.getAllAuthors().subscribe((response) => {
+        response.result.forEach((fetchedAuthor) => {
+          this.courseForm.controls.otherAuthors.push(this.fb.control(fetchedAuthor));
+        });
+      });
+    }
   }
 
   get author() {
@@ -54,9 +63,28 @@ export class CourseFormComponent implements AfterViewInit {
   }
 
   loadData() {
-    // this.courseForm.setValue({
-    //   title:
-    // })
+    if (this.isEdited && this.id) {
+      this.coursesService
+        .getCourse(this.id)
+        .pipe(first())
+        .subscribe((data) => {
+          this.coursesService.getAllAuthors().subscribe((response) => {
+            response.result.forEach((fetchedAuthor) => {
+              if (data.result.authors.includes(fetchedAuthor.id)) {
+                this.courseForm.controls.authors.push(this.fb.control(fetchedAuthor));
+              } else {
+                this.courseForm.controls.otherAuthors.push(this.fb.control(fetchedAuthor));
+              }
+            });
+
+            this.courseForm.patchValue({
+              title: data.result.title,
+              description: data.result.description,
+              duration: data.result.duration
+            });
+          });
+        });
+    }
   }
 
   handleSubmit() {
@@ -67,9 +95,12 @@ export class CourseFormComponent implements AfterViewInit {
       duration: this.courseForm.controls.duration.value || 0,
       authors: this.courseForm.controls.authors.value.map((author: AuthorData) => author.id)
     };
-    console.log(course);
     if (this.courseForm.valid) {
-      this.coursesService.createCourse(course);
+      if (this.isEdited) {
+        this.coursesService.editCourse(this.id, course);
+      } else {
+        this.coursesService.createCourse(course);
+      }
       this.router.navigateByUrl("/courses");
     }
   }

@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { SessionStorageService } from "@app/auth/services/session-storage.service";
 import { API_URL } from "@app/shared/mocks/mocks";
 import { AuthorIdResponse, AuthorsResponse } from "@app/shared/types/authors";
 import { CourseData, CourseResponse, CoursesResponse } from "@app/shared/types/courses";
@@ -63,19 +62,11 @@ export class CoursesService {
   }
 
   createCourse(course: Omit<CourseData, "id" | "creationDate">) {
-    console.log(JSON.stringify(course));
-    const headers = new HttpHeaders({
-      "Content-Type": "application/json",
-      accept: "*/*"
-    });
     this.http
       .post(`${API_URL}${URL_COURSES}/add`, JSON.stringify(course), {
         headers: { "Content-Type": "application/json" }
       })
       .pipe(
-        tap((data) => {
-          console.log(data);
-        }),
         catchError((error) => {
           console.error("Error fetching courses:/n", error);
           return of([]);
@@ -88,9 +79,22 @@ export class CoursesService {
       });
   }
 
-  editCourse(id: string, course: any) {
-    // replace 'any' with the required interface
-    // Add your code here
+  editCourse(id: string, course: Omit<CourseData, "id" | "creationDate">) {
+    this.http
+      .put(`${API_URL}${URL_COURSES}/${id}`, JSON.stringify(course), {
+        headers: { "Content-Type": "application/json" }
+      })
+      .pipe(
+        catchError((error) => {
+          console.error(`Error editing course <${id}>:/n`, error);
+          return of([]);
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          console.log(`Course <${id}> edited successfully!`, data);
+        }
+      });
   }
 
   getCourse(id: string) {

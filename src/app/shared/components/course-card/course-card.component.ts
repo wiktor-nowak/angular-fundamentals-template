@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Router } from "@angular/router";
 import { CoursesService } from "@app/services/courses.service";
-import { AuthorData, AuthorIdResponse } from "@app/shared/types/authors";
+import { AuthorIdResponse } from "@app/shared/types/authors";
 import { CourseData } from "@app/shared/types/courses";
 import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
-import { filter, forkJoin, map, Observable } from "rxjs";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-course-card",
