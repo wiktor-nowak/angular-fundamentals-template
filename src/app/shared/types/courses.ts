@@ -7,6 +7,8 @@ export interface CourseData {
   id: string;
 }
 
+export interface CourseRequest extends Omit<CourseData, "id" | "creationDate"> {}
+
 export interface CoursesResponse {
   successful: boolean;
   result?: CourseData[];

@@ -1,9 +1,9 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { API_URL } from "@app/shared/mocks/mocks";
 import { AuthorIdResponse, AuthorsResponse } from "@app/shared/types/authors";
-import { CourseData, CourseResponse, CoursesResponse } from "@app/shared/types/courses";
+import { CourseRequest, CourseResponse, CoursesResponse } from "@app/shared/types/courses";
 import {
   BehaviorSubject,
   catchError,
@@ -13,9 +13,7 @@ import {
   map,
   Observable,
   of,
-  take,
-  tap,
-  timeout
+  tap
 } from "rxjs";
 
 const URL_COURSES = "/courses";
@@ -61,7 +59,7 @@ export class CoursesService {
       .subscribe();
   }
 
-  createCourse(course: Omit<CourseData, "id" | "creationDate">) {
+  createCourse(course: CourseRequest) {
     this.http
       .post(`${API_URL}${URL_COURSES}/add`, JSON.stringify(course), {
         headers: { "Content-Type": "application/json" }
@@ -72,14 +70,10 @@ export class CoursesService {
           return of([]);
         })
       )
-      .subscribe({
-        next: (data) => {
-          console.log("Course added successfully! ", data);
-        }
-      });
+      .subscribe();
   }
 
-  editCourse(id: string, course: Omit<CourseData, "id" | "creationDate">) {
+  editCourse(id: string, course: CourseRequest) {
     this.http
       .put(`${API_URL}${URL_COURSES}/${id}`, JSON.stringify(course), {
         headers: { "Content-Type": "application/json" }
