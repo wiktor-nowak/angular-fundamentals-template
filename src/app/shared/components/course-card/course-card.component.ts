@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { CoursesService } from "@app/services/courses.service";
 import { AuthorIdResponse } from "@app/shared/types/authors";
 import { CourseData } from "@app/shared/types/courses";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 import { faTrashCan, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { Observable } from "rxjs";
 
@@ -22,7 +23,11 @@ export class CourseCardComponent implements OnInit {
   @Input() editable = false;
   @Output() clickOnShow = new EventEmitter<string>();
 
-  constructor(private coursesService: CoursesService, private router: Router) {}
+  constructor(
+    private coursesService: CoursesService,
+    private router: Router,
+    private facade: CoursesStateFacade
+  ) {}
 
   ngOnInit(): void {
     this.coursesService.grabAuthorNames(this.card.authors).subscribe((response) => {
@@ -39,7 +44,7 @@ export class CourseCardComponent implements OnInit {
   }
 
   deleteCourse() {
-    this.coursesService.deleteCourse(this.card.id);
+    this.facade.deleteCourse(this.card.id);
   }
 
   editCourse() {

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { CoursesService } from "@app/services/courses.service";
 import { AuthorData } from "@app/shared/types/authors";
 import { CourseData } from "@app/shared/types/courses";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { fas, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { first } from "rxjs";
@@ -19,7 +20,8 @@ export class CourseFormComponent implements AfterViewInit {
     public library: FaIconLibrary,
     private coursesService: CoursesService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private facade: CoursesStateFacade
   ) {
     library.addIconPacks(fas);
   }
@@ -97,9 +99,9 @@ export class CourseFormComponent implements AfterViewInit {
     };
     if (this.courseForm.valid) {
       if (this.isEdited) {
-        this.coursesService.editCourse(this.id, course);
+        this.facade.editCourse(course, this.id);
       } else {
-        this.coursesService.createCourse(course);
+        this.facade.createCourse(course);
       }
       this.router.navigateByUrl("/courses");
     }

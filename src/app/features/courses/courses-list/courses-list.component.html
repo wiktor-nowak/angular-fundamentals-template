@@ -1,9 +1,9 @@
 <div class="courses-list">
   <app-search (search)="searchCourses($event)"></app-search>
-  <app-course-card *ngFor="let course of courses" [editable]="isEditable" [card]="course">
+  <app-course-card *ngFor="let course of courses$ | async" [editable]="isEditable" [card]="course">
   </app-course-card>
   <app-info
-    *ngIf="courses.length === 0 && !isLoading"
+    *ngIf="(isLoading$ | async) === false && (courses$ | async).length === 0"
     [text]="isEditable ? 'Please use \'Add New Course\' button to add your first course' : ''"
   >
     <app-button

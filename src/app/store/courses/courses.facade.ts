@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { State } from "..";
 import {
@@ -37,22 +37,22 @@ export class CoursesStateFacade {
   }
 
   getAllCourses() {
-    this.store.dispatch(CourseActions.requestAllCourses());
+    return this.store.dispatch(CourseActions.requestAllCourses());
   }
 
   getSingleCourse(id: string) {
-    this.store.dispatch(CourseActions.requestSingleCourse({ id }));
+    return this.store.dispatch(CourseActions.requestSingleCourse({ id }));
   }
   getFilteredCourses(title: string) {
-    this.store.dispatch(CourseActions.requestFilteredCourses({ title }));
+    return this.store.dispatch(CourseActions.requestFilteredCourses({ title }));
   }
   editCourse(course: CourseRequest, id: string) {
-    this.store.dispatch(CourseActions.requestEditCourse({ course, id }));
+    return this.store.dispatch(CourseActions.requestEditCourse({ course, id }));
   }
   createCourse(course: CourseRequest) {
-    this.store.dispatch(CourseActions.requestCreateCourse({ course }));
+    return this.store.dispatch(CourseActions.requestCreateCourse({ course }));
   }
   deleteCourse(id: string) {
-    this.store.dispatch(CourseActions.requestDeleteCourse({ id }));
+    return this.store.dispatch(CourseActions.requestDeleteCourse({ id }));
   }
 }

@@ -2,8 +2,8 @@ import { Component, Input, Output, EventEmitter, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { CoursesService } from "@app/services/courses.service";
 import { CourseData } from "@app/shared/types/courses";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 import { UserStoreService } from "@app/user/services/user-store.service";
-import { Observable } from "rxjs";
 
 @Component({
   selector: "app-courses-list",
@@ -11,36 +11,36 @@ import { Observable } from "rxjs";
   styleUrls: ["./courses-list.component.scss"]
 })
 export class CoursesListComponent implements OnInit {
-  @Input() courses: CourseData[] = [];
+  @Input() courses$ = this.facade.allCourses$;
   @Input() isEditable = false;
-  isLoading: boolean;
+  isLoading$ = this.facade.isAllCoursesLoading$;
 
   @Output() showCourse = new EventEmitter<string>();
   @Output() editCourse = new EventEmitter<string>();
   @Output() deleteCourse = new EventEmitter<string>();
 
   constructor(
-    private coursesService: CoursesService,
     private router: Router,
-    private userStoreService: UserStoreService
+    private userStoreService: UserStoreService,
+    private facade: CoursesStateFacade
   ) {}
 
   ngOnInit(): void {
-    this.coursesService.getAll();
+    this.facade.getAllCourses();
     this.userStoreService.getUser();
     this.userStoreService.isAdmin$.subscribe((value) => {
       this.isEditable = value;
     });
-    this.coursesService.courses$.subscribe((data) => {
-      this.courses = data;
-    });
-    this.coursesService.isLoading$.subscribe((value) => {
-      this.isLoading = value;
-    });
   }
 
   searchCourses(searchQuery: string) {
-    this.coursesService.filterCourses(searchQuery.split(" ").join(","));
+    if (searchQuery === "") {
+      this.facade.getAllCourses();
+      this.courses$ = this.facade.allCourses$;
+    } else {
+      this.facade.getFilteredCourses(searchQuery.split(" ").join(","));
+      this.courses$ = this.facade.courses$;
+    }
   }
 
   addCourseNavigate() {

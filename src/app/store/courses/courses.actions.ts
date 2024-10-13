@@ -69,7 +69,7 @@ export const requestCreateCourse = createAction(
 );
 export const requestCreateCourseSuccess = createAction(
   CoursesConstants.REQUEST_CREATE_COURSE_SUCCESS,
-  props<{ course: CourseData }>()
+  props<{ course: CourseRequest }>()
 );
 export const requestCreateCourseFail = createAction(
   CoursesConstants.REQUEST_CREATE_COURSE_FAIL,
