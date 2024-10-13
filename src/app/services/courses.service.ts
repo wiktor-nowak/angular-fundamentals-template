@@ -1,42 +1,130 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { API_URL } from "@app/shared/mocks/mocks";
+import { AuthorIdResponse, AuthorsResponse } from "@app/shared/types/authors";
+import { CourseRequest, CourseResponse, CoursesResponse } from "@app/shared/types/courses";
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  first,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  tap
+} from "rxjs";
+
+const URL_COURSES = "/courses";
+const URL_AUTHORS = "/authors";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root"
 })
 export class CoursesService {
-    getAll() {
-        // Add your code here
-    }
+  private isLoading$$ = new BehaviorSubject(true);
+  public isLoading$ = this.isLoading$$.asObservable();
+  private courses$$ = new BehaviorSubject([]);
+  public courses$ = this.courses$$.asObservable();
 
-    createCourse(course: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  constructor(private http: HttpClient, private router: Router) {}
 
-    editCourse(id: string, course: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  grabAuthorNames(authorIds: string[]) {
+    let authors: Observable<AuthorIdResponse[]>;
+    authors = forkJoin(authorIds.map((authorId) => this.getAuthorById(authorId)));
+    return authors.pipe(
+      map((authorResponse) => {
+        return authorResponse
+          .filter((author) => author.successful)
+          .map((author) => author.result.name);
+      })
+    );
+  }
 
-    getCourse(id: string) {
-        // Add your code here
-    }
+  getAll() {
+    this.isLoading$$.next(true);
+    return this.http.get<CoursesResponse>(`${API_URL + URL_COURSES}/all`).pipe(
+      tap((data) => {
+        this.courses$$.next(data.result);
+        this.isLoading$$.next(false);
+      })
+    );
+  }
 
-    deleteCourse(id: string) {
-        // Add your code here
-    }
+  createCourse(course: CourseRequest) {
+    return this.http.post(`${API_URL}${URL_COURSES}/add`, JSON.stringify(course), {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
 
-    filterCourses(value: string) {
-        // Add your code here
-    }
+  editCourse(id: string, course: CourseRequest) {
+    return this.http
+      .put(`${API_URL}${URL_COURSES}/${id}`, JSON.stringify(course), {
+        headers: { "Content-Type": "application/json" }
+      })
+      .pipe(
+        catchError((error) => {
+          console.error(`Error editing course <${id}>:/n`, error);
+          return of([]);
+        })
+      );
+  }
 
-    getAllAuthors() {
-        // Add your code here
-    }
+  getCourse(id: string) {
+    return this.http.get<CourseResponse>(`${API_URL + URL_COURSES}/${id}`).pipe(
+      catchError((error) => {
+        console.error("Error fetching course:/n", error);
+        let emptyResponse: CourseResponse;
+        return of(emptyResponse);
+      })
+    );
+  }
 
-    createAuthor(name: string) {
-        // Add your code here
-    }
+  deleteCourse(id: string) {
+    const headers = { accept: "*/*" };
+    return this.http.delete(`${API_URL}${URL_COURSES}/${id}`, { headers });
+  }
 
-    getAuthorById(id: string) {
-        // Add your code here
-    }
+  filterCourses(value: string) {
+    this.isLoading$$.next(true);
+    return this.http.get<CoursesResponse>(`${API_URL + URL_COURSES}/filter?title=${value}`).pipe(
+      tap((data) => {
+        this.courses$$.next(data.result);
+        this.isLoading$$.next(false);
+      })
+    );
+  }
+
+  getAllAuthors() {
+    return this.http.get<AuthorsResponse>(`${API_URL + URL_AUTHORS}/all`).pipe(
+      first(),
+      catchError((error) => {
+        console.error("Error fetching courses:/n", error);
+        let emptyResponse: AuthorsResponse;
+        return of(emptyResponse);
+      })
+    );
+  }
+
+  createAuthor(name: string) {
+    this.http
+      .post<{ successful: boolean }>(`${API_URL + URL_AUTHORS}/add`, { name: name })
+      .subscribe({
+        next: (data) => {
+          console.log("Author added successfully! ", data);
+        }
+      });
+  }
+
+  getAuthorById(id: string) {
+    return this.http.get<AuthorIdResponse>(`${API_URL + URL_AUTHORS}/${id}`).pipe(
+      first(),
+      catchError((error) => {
+        console.error("Error fetching courses:/n", error);
+        let emptyResponse: AuthorIdResponse;
+        return of(emptyResponse);
+      })
+    );
+  }
 }

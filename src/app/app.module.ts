@@ -1,4 +1,4 @@
-import { NgModule } from "@angular/core";
+import { isDevMode, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { SharedModule } from "@shared/shared.module";
@@ -10,11 +10,38 @@ import { CoursesStoreService } from "@app/services/courses-store.service";
 import { CoursesService } from "@app/services/courses.service";
 import { CoursesComponent } from "./features/courses/courses.component";
 import { CoursesListComponent } from "./features/courses/courses-list/courses-list.component";
+import { AppRoutingModule } from "./app-routing.module";
+import { HTTP_INTERCEPTORS } from "@angular/common/http";
+import { TokenInterceptor } from "./auth/interceptors/token.interceptor";
+import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
+import { CoursesStateFacade } from "./store/courses/courses.facade";
+import { effects, reducers } from "./store";
 
 @NgModule({
   declarations: [AppComponent, CourseInfoComponent, CoursesComponent, CoursesListComponent],
-  imports: [BrowserModule, SharedModule, FontAwesomeModule],
-  providers: [AuthorizedGuard, NotAuthorizedGuard, CoursesService, CoursesStoreService],
+  imports: [
+    BrowserModule,
+    SharedModule,
+    FontAwesomeModule,
+    AppRoutingModule,
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot(effects),
+    StoreDevtoolsModule.instrument({
+      maxAge: 20,
+      logOnly: !isDevMode(),
+      autoPause: true
+    })
+  ],
+  providers: [
+    AuthorizedGuard,
+    NotAuthorizedGuard,
+    CoursesService,
+    CoursesStoreService,
+    CoursesStateFacade,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

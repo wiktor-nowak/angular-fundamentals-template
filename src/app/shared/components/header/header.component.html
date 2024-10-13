@@ -1,6 +1,7 @@
 <div class="app-header">
   <img alt="logo" src="assets/logo.svg" />
   <div class="header-side-panel">
-    <ng-content />
+    <div class="username" *ngIf="isLoggedIn">{{ userName }}</div>
+    <app-button [buttonText]="loginButtonText" (click)="isLoggedIn && logout()"></app-button>
   </div>
 </div>

@@ -5,12 +5,13 @@
   justify-content: center;
   align-items: center;
   padding: 0 36px;
-  gap: 10px;
   background: #007298;
   border-radius: 4px;
   color: #fff;
   text-transform: uppercase;
   cursor: pointer;
+  border: none;
+  width: 100%;
 
   &:hover {
     background: #016486;
