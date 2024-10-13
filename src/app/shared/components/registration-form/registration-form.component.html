@@ -1,24 +1,49 @@
 <h2 class="text-align-center">Registration</h2>
 <div class="app-plate">
-  <form [formGroup]="registrationForm" class="registration-form"(ngSubmit)="handleSubmit()">
+  <form [formGroup]="registrationForm" class="registration-form" (ngSubmit)="handleSubmit()">
     <div>
       <div class="form__control">
         <label for="name">Name</label>
         <!--Use the name `name` for the form control.-->
-        <input type="text" id="name" placeholder="Input text" formControlName="name" [class.invalid]="checkIsValid('name')"/>
-        <span id="nameErrorMessage" class="text-danger" *ngIf="checkIsValid('name')">Name is required.</span>
+        <input
+          type="text"
+          id="name"
+          placeholder="Input text"
+          formControlName="name"
+          [class.invalid]="checkIsValid('name')"
+        />
+        <span id="nameErrorMessage" class="text-danger" *ngIf="checkIsValid('name')"
+          >Name is required.</span
+        >
       </div>
       <div class="form__control">
         <!--Use the name `email` for the form control.-->
         <label for="email">Email</label>
-        <input type="text" id="email" placeholder="Input text" formControlName="email" appEmailValidator [class.invalid]="checkIsValid('email')"/>
-        <span id="emailErrorMessage" class="text-danger" *ngIf="checkIsValid('email')">Email is required.</span>
+        <input
+          type="text"
+          id="email"
+          placeholder="Input text"
+          formControlName="email"
+          appEmailValidator
+          [class.invalid]="checkIsValid('email')"
+        />
+        <span id="emailErrorMessage" class="text-danger" *ngIf="checkIsValid('email')"
+          >Email is required.</span
+        >
       </div>
       <div class="form__control">
         <!--Use the name `password` for the form control.-->
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Input text" formControlName="password" [class.invalid]="checkIsValid('password')"/>
-        <span id="passwordErrorMessage" class="text-danger" *ngIf="checkIsValid('password')">Password is required.</span>
+        <input
+          type="password"
+          id="password"
+          placeholder="Input text"
+          formControlName="password"
+          [class.invalid]="checkIsValid('password')"
+        />
+        <span id="passwordErrorMessage" class="text-danger" *ngIf="checkIsValid('password')"
+          >Password is required.</span
+        >
       </div>
     </div>
     <div>
@@ -26,7 +51,7 @@
         <app-button type="submit" [buttonText]="'Register'"></app-button>
       </div>
       <div class="form__text">
-        If you have an account you may <strong>Login</strong>
+        If you have an account you may <strong (click)="redirectToLogin()">Login</strong>
       </div>
     </div>
   </form>

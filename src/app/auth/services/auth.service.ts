@@ -1,30 +1,100 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
+import { SessionStorageService } from "./session-storage.service";
+import { Router } from "@angular/router";
+import { API_URL } from "@app/shared/mocks/mocks";
+
+export interface LoginInterface {
+  email: "string";
+  password: "string";
+}
+
+export interface RegisterInterface extends LoginInterface {
+  name: "string";
+}
+
+interface LoginResponse {
+  successful: boolean;
+  result: string;
+  user?: {
+    email: string;
+    name: string;
+  };
+}
+
+interface RegisterResponse {
+  successful: boolean;
+  errors?: string[];
+  result?: string;
+}
+
+interface LogoutResponse {
+  successful: boolean;
+  result?: string;
+}
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root"
 })
 export class AuthService {
-    login(user: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  private isAuthorized$$ = new BehaviorSubject(this.ss.getToken() ? true : false);
+  public isAuthorized$ = this.isAuthorized$$.asObservable();
 
-    logout() {
-        // Add your code here
-    }
+  constructor(
+    private http: HttpClient,
+    private ss: SessionStorageService,
+    private router: Router
+  ) {}
 
-    register(user: any) { // replace 'any' with the required interface
-        // Add your code here
-    }
+  login(user: LoginInterface) {
+    this.http.post<LoginResponse>(`${API_URL}/login`, user).subscribe({
+      next: (data) => {
+        if (data.successful) {
+          this.isAuthorized$$.next(true);
+          this.ss.setToken(data.result);
+          this.router.navigateByUrl("/courses");
+        } else {
+          console.error(data.result);
+        }
+      }
+    });
+  }
 
-    get isAuthorised() {
-        // Add your code here. Get isAuthorized$$ value
-    }
+  logout() {
+    const token = this.ss.getToken();
+    const headers = { Authorization: token, accept: "*/*" };
+    this.http.delete<LogoutResponse>(`${API_URL}/logout`, { headers }).subscribe({
+      next: () => {
+        this.isAuthorized$$.next(false);
+        this.ss.deleteToken();
+        this.router.navigateByUrl("/login");
+      },
+      error: (error) => console.error(error)
+    });
+  }
 
-    set isAuthorised(value: boolean) {
-        // Add your code here. Change isAuthorized$$ value
-    }
+  register(user: RegisterInterface) {
+    this.http.post<RegisterResponse>(`${API_URL}/register`, user).subscribe({
+      next: (data) => {
+        if (data.successful) {
+          this.login({ email: user.email, password: user.password });
+        } else {
+          data.errors?.map((err) => console.error(err));
+        }
+      }
+    });
+  }
 
-    getLoginUrl() {
-        // Add your code here
-    }
+  get isAuthorised(): boolean {
+    return this.isAuthorized$$.getValue();
+  }
+
+  set isAuthorised(value: boolean) {
+    this.isAuthorized$$.next(value);
+  }
+
+  getLoginUrl() {
+    // Add your code here
+  }
 }

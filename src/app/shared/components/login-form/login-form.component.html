@@ -6,15 +6,51 @@
         <div class="form__control">
           <label for="email">Email</label>
           <!--Use the name `email` for the form control.-->
-          <input required appEmailValidator type="text" id="email" placeholder="Input text" ngModel name="email" #email="ngModel" [class.invalid]="email.invalid && (email.touched || submitted)"/>
-          <span id="emailErrorMessage" class="text-danger" *ngIf="email.invalid && (email.touched || submitted)">Email is required.</span>
+          <input
+            required
+            appEmailValidator
+            type="text"
+            id="email"
+            placeholder="Input text"
+            ngModel
+            name="email"
+            #email="ngModel"
+            [class.invalid]="email.invalid && (email.touched || submitted)"
+          />
+          <span
+            id="emailErrorMessage"
+            class="text-danger"
+            *ngIf="email.invalid && (email.touched || submitted)"
+            >Email is required.</span
+          >
         </div>
         <div class="form__control">
           <label for="password">Password</label>
           <!--Use the name `password` for the form control.-->
-          <input required password appTogglePassword #toggle="appTogglePassword" type="password" id="password" placeholder="Input text" ngModel name="password" #password="ngModel" [class.invalid]="password.invalid && (password.touched || submitted)"/>
-          <app-button (click)="toggle.togglePassword(); $event.preventDefault()" [iconName]="toggle.isPassword ? faEyeSlashIcon : faEyeIcon" class="password__icon"></app-button>
-          <span id="passwordErrorMessage" class="text-danger" *ngIf="password.invalid && (password.touched || submitted)">Password is required.</span>
+          <input
+            required
+            password
+            appTogglePassword
+            #toggle="appTogglePassword"
+            type="password"
+            id="password"
+            placeholder="Input text"
+            ngModel
+            name="password"
+            #password="ngModel"
+            [class.invalid]="password.invalid && (password.touched || submitted)"
+          />
+          <app-button
+            (click)="toggle.togglePassword(); $event.preventDefault()"
+            [iconName]="toggle.isPassword ? faEyeSlashIcon : faEyeIcon"
+            class="password__icon"
+          ></app-button>
+          <span
+            id="passwordErrorMessage"
+            class="text-danger"
+            *ngIf="password.invalid && (password.touched || submitted)"
+            >Password is required.</span
+          >
         </div>
       </div>
       <div>
@@ -22,7 +58,8 @@
           <app-button type="submit" [buttonText]="'Login'"></app-button>
         </div>
         <div class="form__text">
-          If you don't have an account you may <strong>Registration</strong>
+          If you don't have an account you may
+          <strong (click)="redirectToRegister()">Registration</strong>
         </div>
       </div>
     </div>
